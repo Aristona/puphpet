@@ -1,0 +1,59 @@
+<input type="hidden" name="is_disabled[mysql]" value="0" />
+
+<section id="mysql">
+
+    <!-- Database / Quick Settings -->
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">MySQL Quick Settings</h3>
+                </div>
+
+                <div class="panel-body">
+                    <div class="row form-group">
+                        <div class="col-md-6">
+                            <label for="mysql-root_password">Root Password</label>
+                            <input type="text" id="mysql-root_password" name="mysql[root_password]"
+                                   value="{{ mysql.root_password }}" class="form-control" />
+
+                            <p class="help-block">
+                                Assign a password to the root user.
+                                <strong>Database will only be installed
+                                when a password is entered here.</strong>
+                            </p>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="mysql-phpmyadmin">phpMyAdmin</label><br />
+                            <label class="checkbox-inline">
+                                <input type="checkbox" id="mysql-phpmyadmin" name="mysql[phpmyadmin]"
+                                       {% if mysql.phpmyadmin %}checked{% endif %} value="1" /> Install phpMyAdmin
+                            </label>
+
+                            <p class="help-block">
+                                If installed it will be available from
+                                <code>http://{SERVER_IP_ADDRESS}/phpmyadmin</code>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- end Database / Quick Settings -->
+
+    {% for database in mysql.databases %}
+        {% include 'PuphpetExtensionMysqlBundle:form/sections:NewUserAndDatabase.html.twig'
+            with {'available_privileges': mysql.available_privileges, 'database': database} %}
+    {% endfor %}
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-8 col-sm-push-2">
+            <button type="button" class="btn btn-success btn-lg btn-block addParentContainer"
+                    data-source-url="{{ path('puphpet.extension.mysql.add_database') }}">Add another MySQL database</button>
+        </div>
+    </div>
+
+</section>

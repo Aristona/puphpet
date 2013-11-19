@@ -1,0 +1,12 @@
+version: 55
+
+composer: 1
+
+modules:
+    php: []
+    pear: []
+    pecl: []
+
+ini: []
+
+timezone: ~

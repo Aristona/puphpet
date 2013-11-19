@@ -1,0 +1,51 @@
+puphpet.main:
+    resource: "@PuphpetMainBundle/Resources/config/routing.yml"
+    prefix:   /
+
+puphpet.extension.vagrantfilelocal:
+    resource: "@PuphpetExtensionVagrantfileLocalBundle/Resources/config/routing.yml"
+    prefix:   /extension/vagrantfile/local
+
+puphpet.extension.vagrantfile.digital_ocean:
+    resource: "@PuphpetExtensionVagrantfileDigitalOceanBundle/Resources/config/routing.yml"
+    prefix:   /extension/vagrantfile/digitalocean
+
+puphpet.extension.vagrantfile.rackspace:
+    resource: "@PuphpetExtensionVagrantfileRackspaceBundle/Resources/config/routing.yml"
+    prefix:   /extension/vagrantfile/rackspace
+
+puphpet.extension.vagrantfile.aws:
+    resource: "@PuphpetExtensionVagrantfileAwsBundle/Resources/config/routing.yml"
+    prefix:   /extension/vagrantfile/aws
+
+puphpet.extension.server:
+    resource: "@PuphpetExtensionServerBundle/Resources/config/routing.yml"
+    prefix:   /extension/server
+
+puphpet.extension.apache:
+    resource: "@PuphpetExtensionApacheBundle/Resources/config/routing.yml"
+    prefix:   /extensions/apache
+
+puphpet.extension.nginx:
+    resource: "@PuphpetExtensionNginxBundle/Resources/config/routing.yml"
+    prefix:   /extensions/nginx
+
+puphpet.extension.php:
+    resource: "@PuphpetExtensionPhpBundle/Resources/config/routing.yml"
+    prefix:   /extensions/php
+
+puphpet.extension.xdebug:
+    resource: "@PuphpetExtensionXdebugBundle/Resources/config/routing.yml"
+    prefix:   /extensions/xdebug
+
+puphpet.extension.xhprof:
+    resource: "@PuphpetExtensionXhprofBundle/Resources/config/routing.yml"
+    prefix:   /extensions/xhprof
+
+puphpet.extension.mysql:
+    resource: "@PuphpetExtensionMysqlBundle/Resources/config/routing.yml"
+    prefix:   /extensions/mysql
+
+puphpet.extension.postgresql:
+    resource: "@PuphpetExtensionPostgresqlBundle/Resources/config/routing.yml"
+    prefix:   /extensions/postgresql

@@ -1,256 +1,497 @@
-$(document).ready(function() {
-    var $window = $(window);
+var PUPHPET = {};
 
-    // Disable certain links
-    $('section [href^=#]').click(function (e) {
-        e.preventDefault();
+/**
+ * When element is clicked, update another element.
+ *
+ * This is good for:
+ *
+ * 1. User clicks element, user prompted for input, element properties + user input
+ *      used to update another element
+ * 2. Clicking one element checks another element if target is a radio or checkbox
+ *
+ * Loops through all data-* type attributes of element
+ */
+PUPHPET.updateOtherInput = function() {
+    $(document).on('click', '.update-other-input', function(e){
+        var $parent = $(this);
+
+        $.each($(this).data(), function(key, value) {
+            // jQuery changed "data-foo-bar" to "dataFooBar". Change them back.
+            key = key.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+
+            // Only work with data attributes that have "update-"
+            if (key.search('update-') !== 0) {
+                return;
+            }
+
+            key = key.replace('update-', '');
+
+            var $target = $('#' + key);
+
+            // If target element is not defined as #foo, maybe it is an input,name,value target
+            if (!$target.length) {
+                $target = $('input[name="' + key + '"][value="'+ value +'"]')
+            }
+
+            // If target is a radio element, check it, no need to uncheck in future
+            if ($target.is(':radio')) {
+                $target.prop('checked', true);
+
+                return;
+            }
+
+            /**
+             * If target is checkbox element, check if clicked element was checked or unchecked.
+             *
+             * If unchecked, do not update target. We only want to handle positive actions
+             */
+            if ($target.is(':checkbox') && $parent.is(':checked')) {
+                $target.prop('checked', true);
+
+                return;
+            }
+
+            $target.val(value);
+        });
     });
+};
 
-    // Back to top button
-    setTimeout(function () {
-        $('.bs-top').affix();
-    }, 100);
+PUPHPET.updateOtherInputSelect = function() {
+    $(document).on('change', 'select.update-other-input', function(e){
+        var $parent = $(this);
 
-    // Affix sidebar
-    setTimeout(function () {
-        $('.bs-sidebar').affix({
-            offset: {
-                top: function () {
-                    return getSidebarResizeLimits($window.width());
+        $('select.update-other-input option:selected').each(function() {
+            $.each($(this).data(), function(key, value) {
+                // jQuery changed "data-foo-bar" to "dataFooBar". Change them back.
+                key = key.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+
+                // Only work with data attributes that have "update-"
+                if (key.search('update-') !== 0) {
+                    return;
                 }
-            }
-        });
-    }, 100);
 
-    togglePearThings();
+                key = key.replace('update-', '');
 
-    $('.provider-local-url').click(function() {
-        var osInfo = $(this).attr('rel').split('|');
+                var $target = $('#' + key);
 
-        var os = osInfo[0];
-        var boxName = osInfo[1];
+                // If target element is not defined as #foo, maybe it is an input,name,value target
+                if (!$target.length) {
+                    $target = $('input[name="' + key + '"][value="'+ value +'"]')
+                }
 
-        $('#provider-os').val(os);
-        $('#provider-local-name').val(boxName);
-    });
+                // If target is a radio element, check it, no need to uncheck in future
+                if ($target.is(':radio')) {
+                    $target.prop('checked', true);
 
-    $('.provider-remote-osname').click(function() {
-        $('#provider-os').val($(this).attr('rel'));
-    });
+                    return;
+                }
 
-    $('.providerTab').click(function() {
-        $('#provider-type').val($(this).attr('data-configuration-value'));
-    });
+                /**
+                 * If target is checkbox element, check if clicked element was checked or unchecked.
+                 *
+                 * If unchecked, do not update target. We only want to handle positive actions
+                 */
+                if ($target.is(':checkbox') && $parent.is(':checked')) {
+                    $target.prop('checked', true);
 
-    $('.tags').select2({
-        tags: [],
-        tokenSeparators: [',']
-    });
+                    return;
+                }
 
-    $('.selectTags').select2();
-
-    //@TODO we should implement a more generic approach here
-    updateInputFromSelect('#php-inilist-add', '#php-inilist-name', '#php-inilist-value', '#php-inilist-custom');
-    updateInputFromSelect('#php-inilist-add-xdebug', '#php-inilist-name-xdebug', '#php-inilist-value-xdebug', '#php-inilist-xdebug');
-
-    $('#apache-vhost-add').click(function(){
-        var vhostContainer = $('#apache-vhost-count');
-        var currentCount = vhostContainer.attr('rel');
-
-        $.get('/add/vhost', { id: ++currentCount }, function(data) {
-            vhostContainer.attr('rel', currentCount);
-
-            vhostContainer.append(data);
-
-            $('.tags').select2({
-                tags: [],
-                tokenSeparators: [',']
+                $target.val(value);
             });
         });
-
-        return false;
     });
+};
 
-    $('body').delegate('.apache-vhost-del', 'click', function() {
-        var vhostNum = $(this).attr('rel');
-        $('#' + vhostNum).slideUp(function () {
-            $(this).remove();
-        });
-
-        var vhostContainer = $('#apache-vhost-count');
-        var currentCount = vhostContainer.attr('rel');
-        vhostContainer.attr('rel', --currentCount);
-
-        return false;
-    });
-
-    addDatabaseEntry('mysql');
-    addDatabaseEntry('postgresql');
-
-    deleteDatabaseEntry('mysql');
-    deleteDatabaseEntry('postgresql');
-
-    // Toggle automatically installed PHP packages depending on configuration
-    $('ul[data-configuration-name] a[data-toggle="pill"]').on('shown.bs.tab', function (e) {
-        var configurationName = $(e.target).parents('[data-configuration-name]').data('configuration-name');
-        var configurationValue = $(e.target).data('configuration-value');
-
-        if (configurationName) {
-            var inputSelector = 'input[name="' + configurationName + '"]';
-            $(inputSelector).attr('value', configurationValue);
-        }
-
-        var toShowSelector = '.visible-' + configurationValue;
-        $(toShowSelector).show();
-
-        var toHideSelector = '.visible-' + $(e.relatedTarget).data('configuration-value');
-        $(toHideSelector).hide();
-    });
-
-    $('ul[data-configuration-name] li:not(.active) a').each(function() {
-        var toHideSelector = $(this).data('configuration-value');
-        $('.visible-' + toHideSelector).hide();
-    });
-
-    $('.multiselect').multiselect({
-        maxHeight: 300,
-        buttonWidth: '400px',
-        buttonText: function(options, select) {
-            if (options.length == 0) {
-                return 'None selected <b class="caret"></b>';
+/**
+ * Run selectize.js on initial page load, and then re-run it whenever
+ * new selectize-enabled elements are dynamically added to the DOM.
+ *
+ * @param $element
+ */
+PUPHPET.runSelectize = function($element) {
+    // input or select elements; allows user to create their own tags
+    var $selectTagsEditable = $('.tags, .select-tags-editable', $element).selectize({
+        plugins: ['remove_button'],
+        delimiter: ',',
+        persist: false,
+        create: function(input) {
+            return {
+                value: input,
+                text: input
             }
-            else if (options.length > 5) {
-                return options.length + ' selected  <b class="caret"></b>';
-            }
+        },
+        maxItems: null,
+        valueField: 'value',
+        labelField: 'text',
+        searchField: 'value'
+    });
 
-            var selected = '';
-            options.each(function() {
-                selected += $(this).text() + ', ';
+    // select elements; asks user for value of selected tags; cannot create own tags
+    var $selectTagsUserInput = PUPHPET.selectizeTagsUserInput($element);
+
+    // select single element; does not allow creating new tag
+    var $selectTag = $('.select-tag', $element).selectize({
+        persist: false,
+        create: false
+    });
+
+    // select elements; does not allow creating new tags
+    var $selectTags = $('.select-tags', $element).selectize({
+        plugins: ['remove_button'],
+        delimiter: ',',
+        persist: false,
+        create: false
+    });
+
+    PUPHPET._trackSelectize($selectTagsEditable);
+    PUPHPET._trackSelectize($selectTagsUserInput);
+    PUPHPET._trackSelectize($selectTag);
+    PUPHPET._trackSelectize($selectTags);
+};
+
+/**
+ * Active for select type elements.
+ *
+ * On user adding option, prompts user for data, and creates a new, matching
+ * hidden element containing user input for easier handling of POSTed data.
+ *
+ * On user remove option, adds the removed element back to the available options
+ * list and deletes the hidden element related to removed option.
+ *
+ * @param $element
+ */
+PUPHPET.selectizeTagsUserInput = function($element) {
+    var $selectTagsUserInput = $('.select-tags-user-input', $element).selectize({
+        plugins: ['remove_button'],
+        delimiter: ',',
+        persist: false,
+        create: false,
+        onItemAdd: function(value, $item) {
+            var targetContainer     = '#' + $(this['$input'])[0].getAttribute('data-target-container');
+            var targetNameStructure = $(this['$input'])[0].getAttribute('data-target-name');
+            var elementName         = targetNameStructure + '[' + this.options[value].text + ']';
+
+            var suffix = prompt('Enter Value:') || '0';
+            var label  = this.options[value].text + ' = ' + suffix;
+            var data   = $.extend({}, this.options[value], {
+                text: label
             });
 
-            return selected.substr(0, selected.length -2) + ' <b class="caret"></b>';
+            // Append this user input as a new hidden element
+            $('<input>').attr({
+                type:  'hidden',
+                name:  elementName,
+                value: suffix
+            }).appendTo(targetContainer);
+
+            this.updateOption(value, data);
+        },
+        onItemRemove: function(value, $item) {
+            var targetContainer     = '#' + $(this['$input'])[0].getAttribute('data-target-container');
+            var targetNameStructure = $(this['$input'])[0].getAttribute('data-target-name');
+            var elementName         = targetNameStructure + '[' + this.options[value].value + ']';
+
+            $(targetContainer + ' input[name="' + elementName + '"]').remove();
+
+            var data = $.extend({}, this.options[value], {
+                text: value
+            });
+
+            this.updateOption(value, data);
         }
     });
 
-    githubContributors();
-});
+    // Adds pre-selected option values to selectize field
+    for (var i = 0; i < $selectTagsUserInput.length; i++) {
+        var $selectElement = $selectTagsUserInput[i].selectize;
+        var targetContainer = '#' + $selectTagsUserInput[i].getAttribute('data-target-container');
+        var $selectedItems = $(targetContainer);
 
-function getSidebarResizeLimits(windowWidth) {
-    // 768, 992, 1200
+        if (!$selectedItems.length) {
+            continue;
+        }
 
-    if (windowWidth >= 1200) {
-        return  200;
-    } else if (windowWidth >= 992) {
-        return  230;
+        $selectedItems.children().each(function() {
+            var optionName  = this.getAttribute('data-option-name');
+            var optionValue = $(this).val();
+
+            var label = $selectElement.options[optionName].text + ' = ' + optionValue;
+            var data  = $.extend({}, $selectElement.options[optionName], {
+                text: label
+            });
+
+            $selectElement.updateOption(optionName, data);
+        });
     }
 
-    return 235;
-}
+    return $selectTagsUserInput;
+};
 
-function updateInputFromSelect(addButton, sourceFieldName, sourceFieldValue, target) {
-    var settingName  = $(sourceFieldName);
-    var settingValue = $(sourceFieldValue);
-    var targetField  = $(target);
+var selectizedObjects = [];
 
-    // Add to target element
-    $(addButton).click(function() {
-        // Both source name and value fields must be filled
-        if (!settingName.val() || !settingValue.val()) {
+/**
+ * Keep track of all initialized selectize.js elements
+ *
+ * @param $selectizeElements
+ * @private
+ */
+PUPHPET._trackSelectize = function($selectizeElements) {
+    for (var i = 0; i < $selectizeElements.length; i++) {
+        selectizedObjects[$selectizeElements[i].id] = $selectizeElements[i];
+    }
+};
+
+/**
+ * Allows adding an item to a selectize.js element on user click
+ */
+PUPHPET.selectizeAddClickedToElement = function() {
+    $(document).on('click', '.addClickedToSelectizeElement', function(e){
+        var target    = this.getAttribute('data-target');
+        var itemValue = this.getAttribute('data-value');
+        var itemTitle = this.getAttribute('data-title') != null
+            ? this.getAttribute('data-title')
+            : $(this).text();
+
+        if (!(target in selectizedObjects)) {
             return false;
         }
 
-        // Select2 overwrites existing values in target instead of appending
-        var currentValue = targetField.val() ? targetField.val() + ',' : '';
+        var control = selectizedObjects[target].selectize;
 
-        // Take existing values, add new value and paste the whole thing back in
-        targetField.val(currentValue + settingName.val() + ' = ' + settingValue.val()).trigger('change');
-
-        // User is adding a value, so remove it from the main name list to prevent duplicates
-        $(sourceFieldName + ' option[value="' + settingName.val() + '"]').remove();
-
-        // Clear select information
-        settingName.select2('val', '');
-        settingValue.val('');
+        control.addOption({
+            value: itemValue,
+            text: itemTitle
+        });
+        control.addItem(itemValue);
 
         return false;
     });
+};
 
-    // Target field is changing
-    targetField.on('change', function(e) {
-        // User is removing value from target field
-        if (e.removed) {
-            var equPos = e.removed.id.search('=');
+/**
+ * Adds repeatable containers based on clicked button's data-source-url value.
+ *
+ * Adds the response right before clicked element, and then re-runs selectize.js
+ * on new elements.
+ */
+PUPHPET.addRepeatableElement = function() {
+    $(document).on('click', 'button.addParentContainer', function(e){
+        var sourceUrl = this.getAttribute('data-source-url');
+        var buttonEle = $(this);
 
-            if (equPos <= 0) {
-                return false;
-            }
-
-            var name = e.removed.id.substr(0, equPos).trim();
-
-            // Add option back into source name list
-            settingName
-                .append($('<option></option>')
-                .attr('value', name)
-                .text(name));
-
-            return false;
-        }
-
-        return false;
-    });
-}
-
-function addDatabaseEntry(type) {
-    $('#' + type + '-dbuser-add').click(function(){
-        var dbContainer = $('#' + type + '-dbuser-count');
-        var currentCount = dbContainer.attr('rel');
-
-        $.get('/add/' + type + '/dbuser', { id: ++currentCount }, function(data) {
-            dbContainer.attr('rel', currentCount);
-
-            dbContainer.append(data);
+        $.ajax({
+            url: sourceUrl,
+            cache: false
+        }).done(function(response) {
+            var $row = $(response).insertBefore(buttonEle.closest('.row'));
+            PUPHPET.runSelectize($row);
         });
 
-        return false;
     });
-}
+};
 
-function deleteDatabaseEntry(type) {
-    $('body').delegate('.' + type + '-dbuser-del', 'click', function() {
-        var dbNum = $(this).attr('rel');
-        $('#' + dbNum).slideUp(function () {
-            $(this).remove();
-        });
+/**
+ * Deletes repeatable containers based on button data id
+ */
+PUPHPET.delRepeatableElement = function() {
+    $(document).on('click', 'button.deleteParentContainer', function(e){
+        var parentId = this.getAttribute('data-parent-id');
+        var $parentContainer = $('#' + parentId);
 
-        var dbuserContainer = $('#' + type + '-dbuser-count');
-        var currentCount = dbuserContainer.attr('rel');
-        dbuserContainer.attr('rel', --currentCount);
+        $parentContainer.remove();
 
-        return false;
     });
-}
+};
 
-function togglePearThings()
-{
-    var checkboxElement = '#php-modules-pear-installed';
-
-    $(checkboxElement + '[type="checkbox"]').change(function() {
-        if ($(checkboxElement).is(':checked')) {
-            $('.dependsOnPear').each(function() {
-                 $(this).show();
-            });
-        } else {
-            $('.dependsOnPear').each(function() {
-                 $(this).hide();
-            });
+/**
+ * If elements are grouped into tabs, set all non-active tab elements as inactive
+ *
+ * This is useful so inactive choices do not get POSTed along with rest of form data.
+ *
+ * Runs on initial page load
+ */
+PUPHPET.disableInactiveTabElements = function() {
+    $('ul.group-tabs li').each(function() {
+        if ($(this).hasClass('active')) {
+            return;
         }
-    });
-}
 
-function githubContributors() {
+        var $anchor = $(this).children()[0];
+        var extensionId = $anchor.getAttribute('data-target-element');
+
+        $('#' + extensionId).find('input, textarea, button, select').prop('disabled', true);
+    });
+};
+
+/**
+ * When switching tabs, disable all form elements in non-active tabs and
+ * enable all form elements in newly active tab
+ */
+PUPHPET.enableClickedTabElement = function() {
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+        var original = e.relatedTarget.getAttribute('data-target-element');
+        var target   = e.target.getAttribute('data-target-element');
+
+        $('#' + original).find('input, textarea, button, select').prop('disabled', true);
+        $('#' + target).find('input, textarea, button, select').prop('disabled', false);
+    });
+};
+
+/**
+ * Display the information about PuPHPet's beloved contributors!
+ */
+PUPHPET.githubContributors = function() {
     $.get('https://api.github.com/repos/puphpet/puphpet/contributors', function(githubResponse) {
-        $.post('/githubContributors', { contributors: githubResponse }, function(response) {
+        $.post('/github-contributors', { contributors: githubResponse }, function(response) {
             $('#contributors').html(response);
         });
     });
-}
+};
+
+/**
+ * Allows user to drag and drop a pre-generated yaml file containing
+ * their VMs configuration.
+ */
+PUPHPET.uploadConfig = function() {
+    var dropzone = document.documentElement;
+    var tid;
+
+    dropzone.addEventListener('dragover', handleDragOver, false);
+    dropzone.addEventListener('dragleave', handleDragLeave, false);
+    dropzone.addEventListener('drop', handleFileSelect, false);
+
+
+    function handleDragOver(e) {
+        clearTimeout(tid);
+        e.stopPropagation();
+        e.preventDefault && e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+
+        $('#drag-drop').fadeIn('slow');
+    }
+
+    function handleDragLeave(e) {
+        tid = setTimeout(function () {
+            e.stopPropagation();
+            $('#drag-drop').fadeOut('slow');
+        }, 300);
+    }
+
+    function handleFileSelect(e) {
+        e.stopPropagation();
+        e.preventDefault && e.preventDefault();
+
+        $('#drag-drop').fadeOut('slow');
+
+        var files = e.dataTransfer.files; // FileList object.
+
+        // Only proceed when a single file is dropped
+        if (files.length > 1 || !files.length) {
+            return false;
+        }
+
+        var file = files[0];
+
+        // Only allow yaml uploads
+        if (file.name.split('.').pop().toLowerCase() !== 'yaml') {
+            return false;
+        }
+
+        var reader = new FileReader();
+
+        // Closure to capture the file information.
+        reader.onload = (function (theFile) {
+            return function (e) {
+                submitForm(e.target.result);
+            };
+        })(file);
+
+        // Read in the image file as a data URL.
+        reader.readAsText(file);
+
+        return false;
+    }
+
+    function submitForm(config) {
+        if (!config.length) {
+            return;
+        }
+
+        var form = $(
+            '<form action="' + uploadConfigUrl + '" method="post">' +
+                '<input type="hidden" name="config" value="' + config + '" />' +
+            '</form>'
+        );
+        $('body').append(form);
+        $(form).submit();
+    }
+};
+
+/**
+ * Controls how the static sidebar scrolls with user
+ */
+PUPHPET.sidebar = function() {
+    $('#nav-sidebar').affix({
+        offset: {
+            top:  function () {
+                return $('#top').height() + 50;
+            },
+            bottom: function () {
+                return $('footer').height() + 140;
+            }
+        }
+    });
+
+    $('body').scrollspy({target: '#nav-sidebar', offset: 300});
+};
+
+/**
+ * Toggles pills in main container by clicking sidebar links
+ */
+PUPHPET.sidebarPillToggle = function() {
+    $(document).on('click', '#nav-sidebar ul li p a', function(e){
+        var tagTarget = this.getAttribute('data-tab-target');
+        var $container = $(this).closest('p');
+
+        if (tagTarget != null) {
+            $(tagTarget).tab('show');
+        }
+
+        return _toggleTabs($container, $(this).find('span.glyphicon')[0]);
+    });
+
+    $(document).on('click', 'ul.group-tabs a[data-toggle="tab"]', function(e){
+        var id = '#' + this.id;
+        var $menuTarget = $('#nav-sidebar ul li p a[data-tab-target="' + id + '"]');
+        var $container = $menuTarget.closest('p');
+
+        if ($menuTarget == null) {
+            return;
+        }
+
+        return _toggleTabs($container, $menuTarget.find('span.glyphicon')[0]);
+    });
+
+    function _toggleTabs($container, toActive) {
+        $container.siblings().find('span.glyphicon').removeClass('active');
+        $(toActive).addClass('active');
+
+        return true;
+    }
+};
+
+$(document).ready(function() {
+    PUPHPET.updateOtherInput();
+    PUPHPET.updateOtherInputSelect();
+    PUPHPET.runSelectize(null);
+    PUPHPET.selectizeAddClickedToElement();
+    PUPHPET.addRepeatableElement();
+    PUPHPET.delRepeatableElement();
+    PUPHPET.disableInactiveTabElements();
+    PUPHPET.enableClickedTabElement();
+    PUPHPET.githubContributors();
+    PUPHPET.uploadConfig();
+    PUPHPET.sidebar();
+    PUPHPET.sidebarPillToggle();
+});

@@ -1,0 +1,5 @@
+root_password: 123
+
+phpmyadmin: 0
+
+databases: []

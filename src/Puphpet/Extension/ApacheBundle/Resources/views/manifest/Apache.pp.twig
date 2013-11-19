@@ -1,0 +1,64 @@
+## Begin Apache manifest
+
+if $yaml_values == undef {
+  $yaml_values = loadyaml('/vagrant/puppet/hieradata/common.yaml')
+}
+
+if $apache_values == undef {
+  $apache_values = $yaml_values['apache']
+}
+
+include puphpet::params
+
+$webroot_location = $puphpet::params::apache_webroot_location
+
+exec { "exec mkdir -p ${webroot_location}":
+  command => "mkdir -p ${webroot_location}",
+  onlyif  => "test -d ${webroot_location}",
+}
+
+if ! defined(File[$webroot_location]) {
+  file { $webroot_location:
+    ensure  => directory,
+    group   => 'www-data',
+    mode    => 0775,
+    require => [
+      Exec["exec mkdir -p ${webroot_location}"],
+      Group['www-data']
+    ]
+  }
+}
+
+class { 'apache':
+  user          => $apache_values['user'],
+  group         => $apache_values['group'],
+  default_vhost => $apache_values['default_vhost'],
+  mpm_module    => $apache_values['mpm_module'],
+  manage_user   => false,
+  manage_group  => false
+}
+
+if $::osfamily == 'debian' {
+  case $apache_values['mpm_module'] {
+    'prefork': { ensure_packages( ['apache2-mpm-prefork'] ) }
+    'worker':  { ensure_packages( ['apache2-mpm-worker'] ) }
+    'event':   { ensure_packages( ['apache2-mpm-event'] ) }
+  }
+} elsif $::osfamily == 'redhat' and ! defined(Iptables::Allow['tcp/80']) {
+  iptables::allow { 'tcp/80':
+    port     => '80',
+    protocol => 'tcp'
+  }
+}
+
+create_resources(apache::vhost, $apache_values['vhosts'])
+
+define apache_mod {
+  if ! defined(Class["apache::mod::${name}"]) {
+    class { "apache::mod::${name}": }
+  }
+}
+
+if count($apache_values['modules']) > 0 {
+  apache_mod { $apache_values['modules']: }
+}

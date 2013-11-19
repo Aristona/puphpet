@@ -1,0 +1,12 @@
+available_privileges:
+    - ALL
+    - CREATE
+    - CONNECT
+    - TEMPORARY
+
+empty_database:
+    name: ~
+    user: ~
+    password: ~
+    grant: ALL
+    sql_file: ~

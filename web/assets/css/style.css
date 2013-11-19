@@ -1,459 +1,354 @@
-.full-width {
-    width: 100%;
-}
-
-.bs-header {
-    background: #fff;
-}
-
-.bs-footer {
-    background: #fff;
-}
-
-.col-lg-9 {
-    background: #fff;
-}
-
-.bs-header h1 {
-    color: #317eac;
+.text-large {
+    font-size: 2em;
 }
 
 #logo {
-    width: 150px;
-    height: 161px;
-    margin: 10px 10px 0 0;
-    float: left;
+    width: 100%;
+    max-width: 200px;
 }
 
-code {
-    white-space: normal;
+button.addParentContainer {
+    margin-bottom: 20px;
 }
 
-/* Top nav and header
--------------------------------------------------- */
-.bs-docs-nav {
-    background-color: #45aeea;
+button.tall {
+    padding-top: 40px;
+    padding-bottom: 40px;
 }
 
-.bs-docs-container {
-    position: relative;
+.jumbotron {
+    padding: 25px 30px 5px;
+    margin-bottom: 5px;
+    background-color: #f9f9f9;
 }
 
-.bs-footer {
-    position: relative;
-}
-
-.bs-docs-nav .navbar-toggle {
-    border-color: #428bca;
-}
-
-.bs-docs-nav .navbar-toggle:hover {
-    background-color: #428bca;
-    border-color: #428bca;
-}
-
-.navbar-toggle .icon-bar {
-    background-color: #fff;
-}
-
-.bs-docs-nav .navbar-brand {
-    font-size: 135%;
+#main {
     padding-top: 30px;
     padding-bottom: 30px;
-    color: #fff;
+    background: url('/assets/img/tweed.png');
 }
 
-.bs-sidenav {
-    background-color: #fafafa;
+#main > .container {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background: #f9f9f9;
+    border: 1px solid transparent;
+    border-radius: 4px;
 }
 
-.bs-sidebar .nav > .active > a,
-.bs-sidebar .nav > .active:hover > a,
-.bs-sidebar .nav > .active:focus > a {
-    font-weight: 500;
-    color: #2fa4e7;
-    background-color: transparent;
-    border-right: 1px solid #2fa4e7;
-}
-
-.bs-docs-nav .navbar-nav > li > a {
-    font-size: 135%;
-    padding-top: 30px;
-    padding-bottom: 30px;
-    color: #fff;
-}
-
-.bs-docs-nav .navbar-nav > li > a:hover {
-    color: #fff;
-    background-color: #1684c2;
-}
-
-.bs-docs-nav .navbar-nav > .active > a,
-.bs-docs-nav .navbar-nav > .active > a:hover {
-    color: #fff;
-    background-color: #1684c2;
-}
-
-.bs-example {
+.padded-fieldset fieldset {
     margin-bottom: 15px;
 }
 
-#vagrant .bs-example.os:after {
-    content: 'Operating System';
+.alert-info {
+    background-color: #E5E9EB;
 }
 
-#vagrant .bs-example.sharedFolders:after {
-    content: 'Sharing Your Folders';
+code {
+    background-color: #eed9cd;
 }
 
-#server .bs-example.packages:after {
-    content: 'Choose Your Packages';
+.btn-success {
+    background-color: #3F9E3F;
 }
 
-#server .bs-example.dot_files:after {
-    content: '~/.dot_files';
+/*
+ * Top nav bar
+ */
+div.navbar {
+    color: #fff;
+    background-color: #4c9bd8;
+    border-color: #fff;
 }
 
-#apache .bs-example.modules:after {
-    content: 'Enabled Apache Modules';
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus {
+    color: #4c9bd8;
+    background-color: #fff;
 }
 
-#apache .bs-example.vhost:after {
-    content: 'Add Apache Virtual Host';
+.navbar-default .navbar-toggle {
+    border-color: #fff;
 }
 
-#nginx .bs-example.vhost:after {
-    content: 'Add Nginx Virtual Host';
+.navbar-default .navbar-toggle:hover,
+.navbar-default .navbar-toggle:focus {
+    background-color: #4187bb;
+}
+.navbar-default .navbar-toggle .icon-bar {
+    background-color: #fff;
 }
 
-#php .bs-example.quickSettings:after {
-    content: 'Quick Settings';
+.navbar-default .navbar-brand,
+.navbar-default .navbar-nav > .dropdown > a .caret,
+.navbar-default .navbar-nav > li > a {
+    color: #fff;
 }
 
-#php .bs-example.pear:after {
-    content: 'PEAR & PECL Extensions'
+.navbar-default .navbar-nav > .dropdown > a .caret {
+    border-top-color: #fff;
+    border-bottom-color: #fff;
 }
 
-#php .bs-example.xdebug:after {
-    content: 'Setup XDebug'
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+    color: #4c9bd8;
+    background-color: #fff;
 }
 
-#php .bs-example.xhprof:after {
-    content: 'Setup XHProf'
+.navbar-default .navbar-nav > .open > a,
+.navbar-default .navbar-nav > .open > a:hover,
+.navbar-default .navbar-nav > .open > a:focus {
+    color: #4c9bd8;
+    background-color: #fff;
 }
 
-#php .bs-example.installedPackages:after {
-    content: 'Installed Packages';
+.dropdown-menu > li > a {
+    color: #4c9bd8;
 }
 
-#php .bs-example.timezone:after {
-    content: 'Select timezone';
+.nav > li > ul.nav > li > a {
+    padding: 5px 15px;
 }
 
-#php .bs-example.iniSettings:after {
-    content: '.ini Settings';
+.nav .nav > li > ul {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 10px;
+    font-size: 90%;
 }
 
-#mysql .bs-example.rootPassword:after,
-#postgresql .bs-example.rootPassword:after {
-    content: 'Root User Password';
+/*
+ * Group Tabs
+ */
+.group-tabs {
+    border-bottom: none;
 }
 
-#mysql .bs-example.quickSettings:after {
-    content: 'Quick Settings';
+.group-nav {
+    margin-bottom: 10px;
+    padding: 0 15px;
 }
 
-#mysql .bs-example.createUserDb:after,
-#postgresql .bs-example.createUserDb:after {
-    content: 'Create User & Database';
+.group-tabs > li > a,
+.group-tabs > li > a:hover,
+.group-tabs > li > a:focus {
+    background-color: #ddd;
 }
 
-#vagrant .bs-example.localProvider:after {
-    content: 'Set Up VM Locally';
+.group-tabs > li.active > a:hover,
+.group-tabs > li.active > a:focus {
 }
 
-#vagrant .bs-example.digitalOceanProvider:after {
-    content: 'Digital Ocean';
+.group-tabs > li.active > a,
+.group-tabs > li.active > a:hover,
+.group-tabs > li.active > a:focus {
 }
 
-#vagrant .bs-example.rackspaceProvider:after {
-    content: 'Rackspace';
-}
-
-.tab-content {
-    padding-top: 15px;
-}
-
-.svgIcon {
-    width: 48px;
-    height: 48px;
-    margin-right: 15px;
-    float: left;
-}
-
-.bs-top {
-    z-index: 999 !important;
-}
-
-.tags,
-.selectTags {
-    width: 100% !important;
-}
-
-#contributors .img-thumbnail {
-    margin: 5px;
-}
-
-.bs-header .carbon-container {
+.panel-body .tab-content code {
     margin-top: 10px;
+    margin-bottom: 10px;
+    overflow-x: scroll;
 }
 
-/* Phones */
-@media screen and (max-width: 767px) {
-    .sidebar-container,
-    .bs-header .text-slogan {
-        display: none;
-    }
+/*
+ * Nav Pills
+ */
 
-    .bs-header .logo-container,
-    .bs-header .carbon-container {
-        width: 50%;
-    }
+.nav-pills > li > a,
+.nav-pills > li > a:hover,
+.nav-pills > li > a:focus {
+    background-color: #e8e8e8;
 }
 
-/* Tablets and up */
+/*
+ * Side Menu
+ */
+
+.affix-bottom {
+    position: absolute;
+}
+
+#nav-sidebar .nav > li > a:hover,
+#nav-sidebar .nav > li > a:focus {
+    margin-left: -3px;
+    border-left: 3px solid #f0ad4e;
+    background-color: #e8e8e8;
+}
+
+#nav-sidebar .nav > li.active {
+    border-right: 3px solid #f0ad4e;
+    border-left: 3px solid #f0ad4e;
+    margin-left: -3px;
+    background: #4C9BD8;
+}
+
+#nav-sidebar .nav > li.active > a:hover {
+    background: #4C9BD8;
+}
+
+#nav-sidebar .nav > li.active > a {
+    color: #fff;
+}
+
+#nav-sidebar .nav > li p {
+    margin: 0 0 0 35px;
+}
+
+#nav-sidebar .nav > li p a {
+    width: 100%;
+    height: 100%;
+    padding: 5px 0;
+    display: block;
+    color: #4C9BD8;
+}
+
+#nav-sidebar .nav > li.active p a {
+    color: #fff;
+}
+
+#nav-sidebar .nav > li.active p a .glyphicon {
+    color: #fff !important;
+}
+
+#nav-sidebar .nav > li p a .glyphicon {
+    visibility: hidden;
+}
+
+#nav-sidebar .nav > li p a .glyphicon.active {
+    visibility: visible;
+}
+
+/*
+ * Panels
+ */
+
+.panel-default > .panel-heading {
+    background-color: #e8e8e8;
+}
+
+.panel-body {
+    background: #f1f1f1;
+}
+
+/*
+ * Footer
+ */
+
+footer {
+    margin: 0;
+    padding: 2em 0;
+    background: #f9f9f9;
+}
+
+footer .img-thumbnail img {
+    width: 50px;
+    height: 50px;
+}
+
+/*
+ * Selectize
+ */
+.selectize-control.multi .selectize-input > div,
+.selectize-input .item {
+    color: #fff;
+    background: #428bca;
+    border: #a7d7c6;
+}
+
+.selectize-control.multi .selectize-input > div.active,
+.selectize-input .item {
+    background: #428bca;
+}
+
+.selectize-input .item  {
+    padding: 1px 3px;
+    margin: 0 3px 3px 0;
+    cursor: pointer;
+    border: 0 solid rgba(0, 0, 0, 0);
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.selectize-dropdown .optgroup:before {
+    background-color: #000;
+}
+
+.selectize-dropdown .optgroup-header {
+    margin: 10px 0;
+    color: #000;
+    font-weight: bold;
+}
+
+.selectize-dropdown .optgroup .option {
+    margin-left: 10px;
+}
+
+/*
+ * Extension CSS
+ * @todo: Move this into each extensions' public folder
+ */
+.php-version-5-5 {
+  background-color: #5cb85c;
+}
+
+.php-version-5-4 {
+  background-color: #5bc0de;
+}
+
+.php-version-5-3 {
+  background-color: #f0ad4e;
+}
+
+/*
+ * Drag and drop overlay
+ */
+#drag-drop {
+    width: 100%;
+    height: 100%;
+    display: none;
+    background: #fff;
+    opacity: 0.9;
+    cursor: pointer;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+}
+
+#drag-drop p {
+    width: 100%;
+    text-align: center;
+    color: #4c9bd8;
+    position: absolute;
+    top: 40%;
+
+    font-size: 6em;
+    font-weight: 700;
+    line-height: 1em;
+    display: block;
+    text-shadow: 3px 3px 4px #000;
+    z-index: -1;
+}
+
+/* ===============================================
+   Responsive
+================================================== */
 @media screen and (min-width: 768px) {
-    body.index {
-        background: #fff url('../img/bg.png') no-repeat;
-        background-size: 50% 100%;
-    }
-
-    .container {
-        max-width: 100%;
-    }
-
-    .min-span-1 {
-        min-width: 70px;
-    }
-
-    .min-span-2 {
-        min-width: 140px;
-    }
-
-    .min-span-3 {
-        min-width: 210px;
-    }
-
-    .min-span-4 {
-        min-width: 280px;
-    }
-
-    .min-span-5 {
-        min-width: 350px;
-    }
-
-    .min-span-6 {
-        min-width: 420px;
-    }
-
-    .min-span-7 {
-        min-width: 490px;
-    }
-
-    .min-span-8 {
-        min-width: 560px;
-    }
-
-    .min-span-9 {
-        min-width: 630px;
-    }
-
-    .min-span-10 {
-        min-width: 700px;
-    }
-
-    .min-span-11 {
-        min-width: 770px;
-    }
-
-    .min-span-12 {
-        min-width: 840px;
-    }
-
-    .max-span-1 {
-        max-width: 70px;
-    }
-
-    .max-span-2 {
-        max-width: 140px;
-    }
-
-    .max-span-3 {
-        max-width: 210px;
-    }
-
-    .max-span-4 {
-        max-width: 280px;
-    }
-
-    .max-span-5 {
-        max-width: 350px;
-    }
-
-    .max-span-6 {
-        max-width: 420px;
-    }
-
-    .max-span-7 {
-        max-width: 490px;
-    }
-
-    .max-span-8 {
-        max-width: 560px;
-    }
-
-    .max-span-9 {
-        max-width: 630px;
-    }
-
-    .max-span-10 {
-        max-width: 700px;
-    }
-
-    .max-span-11 {
-        max-width: 770px;
-    }
-
-    .max-span-12 {
-        max-width: 840px;
-    }
-
-    .sidebar-container {
-        padding-right: 0;
-    }
-
-    .bs-sidebar.affix {
-        position: fixed;
-        top: 50px;
-        bottom: 0;
-    }
-
-    .bs-sidenav {
-        height: 100%;
-    }
-
-    .bs-docs-container .col-lg-3 {
-        max-width: 190px;
-    }
-
-    .bs-sidebar,
-    .bs-sidebar.affix{
-        width: 175px;
-    }
-
-    .bs-footer {
-        margin-top: 0;
-    }
-
-    .bs-sidebar .nav > li > a {
-        font-size: 1.5em;
-    }
-
-    .bs-docs-section {
-        padding-top: 40px;
-    }
-
-    .bs-sidenav li {
-        margin-bottom: 15px;
-    }
-
-    .sidebar-container .svgIcon {
-        width: 20px;
-        height: 20px;
+    .nav.affix, .nav.affix-bottom {
+        width: 158px;
     }
 }
 
-/* Tablets/desktops and up */
 @media screen and (min-width: 992px) {
-    .bs-docs-container .col-lg-3 {
-        max-width: 245px;
-    }
-
-    .bs-sidebar,
-    .bs-sidebar.affix{
-        width: 230px;
-    }
-
-    .bs-sidebar .nav > li > a {
-        font-size: 2em;
-    }
-
-    .bs-sidenav li {
-        margin-bottom: 15px;
-    }
-
-    .bs-sidebar .nav > .active > ul {
-        margin-left: 40px;
-    }
-
-    .sidebar-container .svgIcon {
-        width: 40px;
-        height: 40px;
-    }
-
-    .content-container .svgIcon {
-        width: 92px;
-        height: 92px;
-    }
-
-    .content-container .page-header h1 {
-        font-size: 56px;
-        line-height: 1.4em;
+    .nav.affix, .nav.affix-bottom {
+        width: 213px;
     }
 }
 
-/* Large desktops and up */
 @media screen and (min-width: 1200px) {
-    .bs-docs-container .col-lg-3 {
-        max-width: 295px;
-    }
-
-    .bs-sidebar,
-    .bs-sidebar.affix {
-        width: 280px;
-    }
-
-    .bs-sidebar .nav > li > a {
-        font-size: 2.5em;
-    }
-
-    .bs-sidenav li {
-        margin-bottom: 15px;
-    }
-
-    .bs-sidebar .nav > .active > ul {
-        margin-left: 60px;
-    }
-
-    .sidebar-container .svgIcon {
-        width: 48px;
-        height: 48px;
-    }
-
-    .content-container .svgIcon {
-        width: 100px;
-        height: 100px;
-    }
-
-    .content-container .page-header h1 {
-        font-size: 64px;
-        line-height: 1.5em;
-    }
-}
-
-
-@media screen and (min-width: 1480px) {
-    .col-lg-9 {
-        width: 80%;
+    .nav.affix, .nav.affix-bottom {
+        width: 263px;
     }
 }

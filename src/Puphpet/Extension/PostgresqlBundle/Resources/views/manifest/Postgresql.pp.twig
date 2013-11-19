@@ -1,0 +1,57 @@
+## Begin PostgreSQL manifest
+
+if $postgresql_values == undef {
+  $postgresql_values = hiera('postgresql', false)
+}
+
+if $php_values == undef {
+  $php_values = hiera('php', false)
+}
+
+if $postgresql_values['root_password'] {
+  group { $postgresql_values['user_group']:
+      ensure => present
+  }
+
+  class { 'postgresql::server':
+    postgres_password => $postgresql_values['root_password'],
+    require           => Group[$postgresql_values['user_group']]
+  }
+
+  if is_hash($postgresql_values['databases']) and count($postgresql_values['databases']) > 0 {
+    create_resources(postgresql_db, $postgresql_values['databases'])
+  }
+
+  if is_hash($php_values) and ! defined(Php::Module['pgsql']) {
+    php::module { 'pgsql': }
+  }
+}
+
+define postgresql_db (
+  $user,
+  $password,
+  $grant,
+  $sql_file = false
+) {
+  if $name == '' or $user == '' or $password == '' or $grant == '' {
+    fail( 'PostgreSQL DB requires that name, user, password and grant be set. Please check your settings!' )
+  }
+
+  postgresql::server::db { $name:
+    user     => $user,
+    password => $password,
+    grant    => $grant
+  }
+
+  if $sql_file {
+    $table = "${name}.*"
+
+    exec{ "${name}-import":
+      command     => "psql ${name} < ${sql_file}",
+      logoutput   => true,
+      refreshonly => $refresh,
+      require     => Postgresql::Server::Db[$name],
+      onlyif      => "test -f ${sql_file}"
+    }
+  }
+}

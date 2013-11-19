@@ -1,0 +1,134 @@
+{% block head %}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <title>PuPHPet - Online GUI configurator for Puppet & Vagrant</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Vagrant/Puppet GUI Configuration" />
+        <meta name="author" content="Juan Treminio @ https://jtreminio.com" />
+        <meta charset="utf-8">
+        {% block stylesheets %}
+            <link rel="stylesheet" href="/assets/vendor/bootstrap/css/bootstrap.css">
+            <link rel="stylesheet" href="/assets/vendor/bootstrap/css/font-awesome.min.css">
+            <link rel="stylesheet" href="/assets/vendor/bootstrap/css/bootswatch.css">
+            <link rel="stylesheet" href="/assets/vendor/selectize.js/selectize.bootstrap3.css">
+            <link rel="stylesheet" href="/assets/css/style.css">
+        {% endblock %}
+
+        {% block topJs %}
+            <!--[if lt IE 9]>
+            <script src="/assets/vendor/html5shiv.js"></script>
+            <script src="/assets/vendor/respond.min.js"></script>
+            <![endif]-->
+        {% endblock %}
+    </head>
+{% endblock head %}
+
+<body>
+
+{% block topMenu %}
+    <div class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="{{ path('puphpet.main.homepage') }}" class="navbar-brand">PuPHPet</a>
+                <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="navbar-collapse collapse" id="navbar-main">
+                <ul class="nav navbar-nav">
+                    <li><a href="{{ path('puphpet.main.about') }}">About</a></li>
+                    <li><a href="{{ path('puphpet.main.help') }}">Help!</a></li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://github.com/puphpet/puphpet/issues" target="_blank">Issues?</a></li>
+                    <li><a href="https://github.com/puphpet/puphpet" target="_blank">Fork Me</a></li>
+                </ul>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+<div class="jumbotron well-sm" id="top">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-9 hidden-sm hidden-md hidden-lg hidden-print">
+                <h1>PuPHPet</h1>
+
+                <p>A simple GUI to set up virtual machines for <strike>PHP</strike> <strong>Web</strong> development.</p>
+            </div>
+            <div class="col-sm-3 col-xs-6"><p class="text-center"><img src="/assets/img/logo.png" id="logo" /></p></div>
+            <div class="col-sm-6 hidden-xs">
+                <h1>PuPHPet</h1>
+
+                <p>A simple GUI to set up virtual machines for <strike>PHP</strike> <strong>Web</strong> development.</p>
+            </div>
+            <div class="col-sm-3 col-xs-6">
+                {% if not app.debug %}
+                    {% include 'PuphpetMainBundle:front:carbonAds.html.twig' %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block main %}
+{% endblock %}
+
+{% block footer %}
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <ul class="list-unstyled">
+                    <li class="pull-right"><span class="icon-arrow-up"></span> <a href="#top">Back to top</a></li>
+                    <li><span class="icon-pencil"></span> <a href="https://jtreminio.com">Blog</a></li>
+                    <li><span class="icon-twitter"></span> <a href="https://twitter.com/juantreminio" target="_blank">Twitter</a></li>
+                    <li><span class="icon-github"></span> <a href="https://github.com/puphpet/puphpet" target="_blank">GitHub</a></li>
+                    <li>
+                        <iframe class="github-btn" allowtransparency="true" frameborder="0" scrolling="0" width="100px" height="20px"
+                                src="{{ path('puphpet.main.github_btn') }}?user=puphpet&repo=puphpet&type=watch&count=true"></iframe>
+                    </li>
+                    <li>
+                        <iframe class="github-btn" allowtransparency="true" frameborder="0" scrolling="0" width="102px" height="20px"
+                                src="{{ path('puphpet.main.github_btn') }}?user=puphpet&repo=puphpet&type=fork&count=true"></iframe>
+                    </li>
+                </ul>
+
+                <p>
+                    Made with <span class="icon-heart"></span> by <a href="https://jtreminio.com">Juan Treminio</a>.
+                    Contact him at <a href="mailto:jtreminio@gmail.com">jtreminio@gmail.com</a>.
+                    Code licensed under the <a href="http://opensource.org/licenses/MIT">MIT License</a>.</p>
+
+                <h4>Made possible thanks to contributions by</h4>
+
+                <div id="contributors"></div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    {% block footerJs %}
+        <script src="/assets/vendor/jquery.min.js"></script>
+        <script src="/assets/vendor/bootstrap/js/bootstrap.min.js"></script>
+        <script src="/assets/vendor/selectize.js/selectize.min.js"></script>
+        <script src="/assets/js/custom.js"></script>
+    {% endblock footerJs %}
+
+    {% if not app.debug %}
+        <script type="text/javascript">
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            ga('create', 'UA-29873536-2', 'puphpet.com');
+            ga('send', 'pageview');
+        </script>
+    {% endif %}
+</body>
+</html>
+{% endblock footer %}

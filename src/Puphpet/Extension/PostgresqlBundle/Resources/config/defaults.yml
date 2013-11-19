@@ -1,0 +1,7 @@
+databases:
+    -
+        name: ~
+        user: ~
+        password: ~
+        grant: ALL
+        sql_file: ~

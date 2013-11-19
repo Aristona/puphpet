@@ -1,0 +1,128 @@
+## Begin Nginx manifest
+
+if $nginx_values == undef {
+   $nginx_values = hiera('nginx', false)
+}
+
+if $php_values == undef {
+   $php_values = hiera('php', false)
+}
+
+if $::osfamily == 'debian' and $lsbdistcodename in ['lucid'] and is_hash($php_values) and $php_values['version'] == '53' {
+  apt::key { '67E15F46': }
+  apt::ppa { 'ppa:l-mierzwa/lucid-php5':
+    options => '',
+    require => Apt::Key['67E15F46']
+  }
+}
+
+include puphpet::params
+
+$webroot_location = $puphpet::params::nginx_webroot_location
+
+exec { "exec mkdir -p ${webroot_location}":
+  command => "mkdir -p ${webroot_location}",
+  onlyif  => "test -d ${webroot_location}",
+}
+
+if ! defined(File[$webroot_location]) {
+  file { $webroot_location:
+    ensure  => directory,
+    group   => 'www-data',
+    mode    => 0775,
+    require => [
+      Exec["exec mkdir -p ${webroot_location}"],
+      Group['www-data']
+    ]
+  }
+}
+
+$php5_fpm_sock = '/var/run/php5-fpm.sock'
+
+if $php_values['version'] == undef {
+  $fastcgi_pass = null
+} elsif $php_values['version'] == '53' {
+  $fastcgi_pass = '127.0.0.1:9000'
+} else {
+  $fastcgi_pass = "unix:${php5_fpm_sock}"
+}
+
+class { 'nginx': }
+
+if count($nginx_values['vhosts']) > 0 {
+  create_resources(nginx_vhost, $nginx_values['vhosts'])
+}
+
+if $::osfamily == 'redhat' and ! defined(Iptables::Allow['tcp/80']) {
+  iptables::allow { 'tcp/80':
+    port     => '80',
+    protocol => 'tcp'
+  }
+}
+
+define nginx_vhost (
+  $server_name,
+  $server_aliases = [],
+  $www_root,
+  $listen_port,
+  $index_files,
+  $envvars = [],
+){
+  $merged_server_name = concat([$server_name], $server_aliases)
+
+  if is_array($index_files) and count($index_files) > 0 {
+    $try_files = $index_files[count($index_files) - 1]
+  } else {
+    $try_files = 'index.php'
+  }
+
+  nginx::resource::vhost { $server_name:
+    server_name => $merged_server_name,
+    www_root    => $www_root,
+    listen_port => $listen_port,
+    index_files => $index_files,
+    try_files   => ['$uri', '$uri/', "/${try_files}?\$args"],
+  }
+
+  $fastcgi_param = concat(
+  [
+    'PATH_INFO $fastcgi_path_info',
+    'PATH_TRANSLATED $document_root$fastcgi_path_info',
+    'SCRIPT_FILENAME $document_root$fastcgi_script_name',
+  ], $envvars)
+
+  nginx::resource::location { "${server_name}-php":
+    ensure              => present,
+    vhost               => $server_name,
+    location            => '~ \.php$',
+    proxy               => undef,
+    try_files           => ['$uri', '$uri/', "/${try_files}?\$args"],
+    www_root            => $www_root,
+    location_cfg_append => {
+      'fastcgi_split_path_info' => '^(.+\.php)(/.+)$',
+      'fastcgi_param'           => $fastcgi_param,
+      'fastcgi_pass'            => $fastcgi_pass,
+      'fastcgi_index'           => 'index.php',
+      'include'                 => 'fastcgi_params'
+    },
+    notify              => Class['nginx::service'],
+  }
+}
+
+if $::osfamily == 'redhat' and $fastcgi_pass == "unix:${php5_fpm_sock}" {
+  exec { "create ${php5_fpm_sock} file":
+    command => "touch ${php5_fpm_sock} && chmod 777 ${php5_fpm_sock}",
+    onlyif  => ["test ! -f ${php5_fpm_sock}", "test ! -f ${php5_fpm_sock}="],
+    require => Package['nginx']
+  }
+
+  exec { "listen = 127.0.0.1:9000 => listen = ${php5_fpm_sock}":
+    command => "perl -p -i -e 's#listen = 127.0.0.1:9000#listen = ${php5_fpm_sock}#gi' /etc/php-fpm.d/www.conf",
+    unless  => "grep -c 'listen = 127.0.0.1:9000' '${php5_fpm_sock}'",
+    notify  => [
+      Class['nginx::service'],
+      Service['php-fpm']
+    ],
+    require => Exec["create ${php5_fpm_sock} file"]
+  }
+}
